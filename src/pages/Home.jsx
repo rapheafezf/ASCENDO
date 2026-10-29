@@ -2,20 +2,19 @@ import Seo from '../components/Seo'
 import Divider from '../components/Divider'
 import Marquee from '../components/Marquee'
 import Hero from '../components/home/Hero'
-import Categories from '../components/home/Categories'
 import NewArrivals from '../components/home/NewArrivals'
 import Editorial from '../components/home/Editorial'
 import Stats from '../components/home/Stats'
 import Lookbook from '../components/home/Lookbook'
 import Newsletter from '../components/home/Newsletter'
-import { PRODUCTS } from '../data/products'
+import { totalStock, useContent } from '../hooks/useContent'
 
-// Données structurées produit (schema.org) pour les nouveautés mises en avant
-const productsLd = {
+// Données structurées produit (schema.org) pour les hoodies mis en avant
+const productsLd = (products) => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'Nouveautés ASCENDO',
-  itemListElement: PRODUCTS.slice(0, 8).map((p, i) => ({
+  name: 'Hoodies ASCENDO',
+  itemListElement: products.slice(0, 8).map((p, i) => ({
     '@type': 'ListItem',
     position: i + 1,
     item: {
@@ -24,30 +23,32 @@ const productsLd = {
       description: p.description,
       brand: { '@type': 'Brand', name: 'ASCENDO' },
       material: p.material,
+      audience: { '@type': 'PeopleAudience', suggestedGender: 'unisex' },
+      ...(p.images?.[0] && { image: p.images[0] }),
       url: `https://ascendo.fr/produit/${p.id}`,
       offers: {
         '@type': 'Offer',
         price: p.price.toFixed(2),
         priceCurrency: 'EUR',
-        availability: 'https://schema.org/InStock',
+        availability: totalStock(p) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       },
     },
   })),
-}
+})
 
 export default function Home() {
+  const { products, site } = useContent()
   return (
     <>
       <Seo
-        title="ASCENDO — Elevate Yourself | Streetwear premium"
-        description="ASCENDO, streetwear premium minimaliste. Hoodies, t-shirts et pantalons en coton épais 380 g/m². Collection Automne-Hiver. Livraison offerte dès 80 €."
-        jsonLd={productsLd}
+        title={site.seo.title}
+        description={site.seo.description}
+        jsonLd={productsLd(products)}
       />
       <Hero />
       <div id="marquee">
         <Marquee />
       </div>
-      <Categories />
       <NewArrivals />
       <Editorial />
       <Stats />

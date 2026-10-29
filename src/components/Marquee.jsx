@@ -1,10 +1,12 @@
-const WORDS = ['ASCENDO', 'RISE', 'ELEVATE', 'PROGRESS']
+import { useContent } from '../hooks/useContent'
 
 /** Bandeau défilant infini. Le contenu est dupliqué pour une boucle sans à-coup. */
 export default function Marquee() {
-  const row = [...WORDS, ...WORDS]
+  const words = useContent().site.marquee.filter((w) => w.trim())
+  if (!words.length) return null
+  const row = [...words, ...words]
   return (
-    <div className="overflow-hidden border-y border-white/10 bg-navy py-5 text-white" aria-label="ASCENDO, Rise, Elevate, Progress">
+    <div className="overflow-hidden border-y border-white/10 bg-navy py-5 text-white" aria-label={words.join(', ')}>
       <div className="flex w-max animate-marquee motion-reduce:animate-none" aria-hidden="true">
         {[0, 1].map((copy) => (
           <ul key={copy} className="flex shrink-0 items-center">

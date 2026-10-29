@@ -1,10 +1,12 @@
 import { useId, useState } from 'react'
 import Reveal from '../Reveal'
 import { ArrowIcon } from '../Icons'
+import { useContent } from '../../hooks/useContent'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 export default function Newsletter() {
+  const { newsletter } = useContent().site
   const id = useId()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState('idle') // idle | error | success
@@ -29,15 +31,13 @@ export default function Newsletter() {
 
       <div className="container-brand relative">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow mb-4 text-white/70">Newsletter</p>
-          <h2 id="nl-title">Rejoins le mouvement</h2>
-          <p className="mt-5 text-white/80">
-            Accès anticipé aux drops, coulisses de l'atelier et <strong className="font-medium text-white">-10 % sur ta première commande</strong>.
-          </p>
+          <p className="eyebrow mb-4 text-white/70">{newsletter.eyebrow}</p>
+          <h2 id="nl-title">{newsletter.title}</h2>
+          <p className="mt-5 text-white/80">{newsletter.text}</p>
 
           {status === 'success' ? (
             <p role="status" className="mx-auto mt-10 max-w-lg border border-white/30 px-6 py-5 font-display text-sm font-bold uppercase tracking-[0.14em]">
-              Bienvenue. Ton code -10 % arrive dans ta boîte mail.
+              {newsletter.success}
             </p>
           ) : (
             <form onSubmit={onSubmit} noValidate className="mx-auto mt-10 max-w-lg">
@@ -69,7 +69,7 @@ export default function Newsletter() {
                 {status === 'error' ? (
                   <span className="font-medium text-white">Merci de saisir une adresse e-mail valide.</span>
                 ) : (
-                  'Un e-mail par semaine maximum. Désinscription en un clic.'
+                  newsletter.note
                 )}
               </p>
             </form>

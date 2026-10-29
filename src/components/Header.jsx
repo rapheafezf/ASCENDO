@@ -3,14 +3,13 @@ import { NavLink, useLocation } from 'react-router'
 import Logo from './Logo'
 import { BagIcon, CloseIcon, HeartIcon, SearchIcon, UserIcon } from './Icons'
 import { useStore } from '../hooks/useStore'
+import { useContent } from '../hooks/useContent'
 
 export const NAV = [
-  { label: 'Nouveautés', to: '/collection/nouveautes' },
-  { label: 'Homme', to: '/collection/homme' },
-  { label: 'Femme', to: '/collection/femme' },
-  { label: 'Accessoires', to: '/collection/accessoires' },
+  { label: 'Hoodies', to: '/collection/hoodies' },
   { label: 'Lookbook', to: '/lookbook' },
   { label: 'À propos', to: '/a-propos' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 const ANNOUNCE_H = 36
@@ -23,6 +22,7 @@ const ANNOUNCE_H = 36
 export default function Header() {
   const { pathname } = useLocation()
   const { cartCount, cartPulse, wishlist } = useStore()
+  const { site } = useContent()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [bump, setBump] = useState(false)
@@ -68,7 +68,7 @@ export default function Header() {
           className="flex items-center justify-center bg-ink px-4 text-center text-[11px] font-medium uppercase tracking-[0.14em] text-white sm:text-xs"
           style={{ height: ANNOUNCE_H }}
         >
-          Livraison offerte dès 80&nbsp;€ <span className="mx-3" aria-hidden="true">•</span> Retours 30&nbsp;jours
+          {site.announcement}
         </p>
 
         <header

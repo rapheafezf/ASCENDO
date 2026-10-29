@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
-import { COLORS, formatPrice } from '../data/products'
+import { COLORS, SIZES, formatPrice } from '../data/products'
+import { totalStock } from '../hooks/useContent'
 import Placeholder from './Placeholder'
 import { useStore } from '../hooks/useStore'
 import { BagIcon, HeartIcon } from './Icons'
@@ -7,23 +8,40 @@ import { BagIcon, HeartIcon } from './Icons'
 /**
  * Carte produit : image 3:4, seconde image au survol, badge, favoris,
  * ajout rapide, nom, prix et pastilles de couleur.
+ * Sans photo, un bloc aux couleurs de la marque prend le relais.
  */
 export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw, 50vw' }) {
   const { addToCart, wishlist, toggleWishlist } = useStore()
   const liked = wishlist.includes(product.id)
   const url = `/produit/${product.id}`
   const title = `${product.name} ${product.color}`
+  const soldOut = totalStock(product) === 0
+  // Ajout rapide : taille M si disponible, sinon la première taille en stock
+  const quickSize = product.stock?.M > 0 ? 'M' : SIZES.find((s) => product.stock?.[s] > 0)
+  const [img1, img2] = product.images || []
+  const imgCls = 'absolute inset-0 h-full w-full object-cover transition-[transform,opacity] duration-700 ease-brand'
 
   return (
     <article className="group/card relative">
       <div className="relative aspect-[3/4] overflow-hidden rounded-[2px] bg-mist">
         <Link to={url} aria-label={title} className="absolute inset-0">
-          <span className="sr-only">{product.alt[0]}</span>
-          <Placeholder tone="white" label={product.category} className="transition-transform duration-700 ease-brand group-hover/card:scale-[1.06]" />
-          <Placeholder tone="navy" label={product.name} className="opacity-0 transition-opacity duration-700 ease-brand group-hover/card:opacity-100" />
+          {img1 ? (
+            <img src={img1} alt={title} loading="lazy" decoding="async" sizes={sizes} className={`${imgCls} group-hover/card:scale-[1.06]`} />
+          ) : (
+            <Placeholder tone="white" label={product.category} className="transition-transform duration-700 ease-brand group-hover/card:scale-[1.06]" />
+          )}
+          {img2 ? (
+            <img src={img2} alt="" loading="lazy" decoding="async" sizes={sizes} className={`${imgCls} opacity-0 group-hover/card:opacity-100`} />
+          ) : (
+            !img1 && <Placeholder tone="navy" label={product.name} className="opacity-0 transition-opacity duration-700 ease-brand group-hover/card:opacity-100" />
+          )}
         </Link>
 
-        {product.badge && (
+        {soldOut ? (
+          <span className="pointer-events-none absolute left-3 top-3 bg-slate px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+            Épuisé
+          </span>
+        ) : product.badge && (
           <span
             className={`pointer-events-none absolute left-3 top-3 px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] ${
               product.badge === 'Nouveau' ? 'bg-ink text-white' : 'bg-navy text-white'
@@ -43,16 +61,18 @@ export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw
           <HeartIcon filled={liked} width={20} height={20} />
         </button>
 
+        {!soldOut && (
         <button
           type="button"
-          onClick={() => addToCart(product)}
+          onClick={() => addToCart(product, quickSize)}
           className="absolute inset-x-3 bottom-3 flex h-11 items-center justify-center gap-2 bg-white font-display text-[11px] font-bold uppercase tracking-[0.16em] text-ink opacity-0 shadow-soft transition-[opacity,transform,background-color,color] duration-500 ease-brand hover:bg-ink hover:text-white focus-visible:translate-y-0 focus-visible:opacity-100 group-hover/card:translate-y-0 group-hover/card:opacity-100 max-lg:opacity-100 lg:translate-y-3"
-          aria-label={`Ajouter ${title} au panier, taille M`}
+          aria-label={`Ajouter ${title} au panier, taille ${quickSize}`}
         >
           <BagIcon width={16} height={16} />
           <span className="max-sm:hidden">Ajout rapide</span>
           <span className="sm:hidden">Ajouter</span>
         </button>
+        )}
       </div>
 
       <div className="mt-4 flex items-start justify-between gap-3">
@@ -62,7 +82,7 @@ export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw
               {product.name}
             </Link>
           </h3>
-          <p className="text-sm text-slate">{product.color}</p>
+          <p className="text-sm text-slate">{product.color} · Mixte</p>
         </div>
         <p className="shrink-0 text-right text-sm font-medium">
           {product.compareAt && (
@@ -77,7 +97,7 @@ export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw
       </div>
 
       <ul className="mt-3 flex gap-2" aria-label="Coloris disponibles">
-        {product.colors.map((c) => (
+        {product.colors.filter((c) => COLORS[c]).map((c) => (
           <li key={c}>
             <span
               title={COLORS[c].label}

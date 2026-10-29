@@ -1,15 +1,13 @@
 import { Link } from 'react-router'
 import Logo from './Logo'
 import { InstagramIcon, TikTokIcon, YoutubeIcon } from './Icons'
+import { useContent } from '../hooks/useContent'
 
 const COLUMNS = [
   {
     title: 'Boutique',
     links: [
-      ['Nouveautés', '/collection/nouveautes'],
-      ['Homme', '/collection/homme'],
-      ['Femme', '/collection/femme'],
-      ['Accessoires', '/collection/accessoires'],
+      ['Hoodies', '/collection/hoodies'],
       ['Lookbook', '/lookbook'],
     ],
   },
@@ -37,23 +35,26 @@ const COLUMNS = [
 const PAYMENTS = ['VISA', 'Mastercard', 'Amex', 'PayPal', 'Apple Pay']
 
 export default function Footer() {
+  const { footer } = useContent().site
   return (
     <footer className="on-dark bg-ink text-white">
       <div className="container-brand grid gap-12 py-20 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)] lg:py-24">
         <div className="max-w-xs">
           <Logo />
           <p className="mt-5 text-sm text-white/70">
-            Streetwear premium pensé pour ceux qui avancent. Dessiné à Paris, fabriqué au Portugal.
+            {footer.tagline}
           </p>
           <ul className="mt-6 flex gap-2" aria-label="Réseaux sociaux">
             {[
-              ['Instagram', InstagramIcon],
-              ['TikTok', TikTokIcon],
-              ['YouTube', YoutubeIcon],
-            ].map(([name, Icon]) => (
+              ['Instagram', InstagramIcon, footer.instagram],
+              ['TikTok', TikTokIcon, footer.tiktok],
+              ['YouTube', YoutubeIcon, footer.youtube],
+            ].filter(([, , url]) => url).map(([name, Icon, url]) => (
               <li key={name}>
                 <a
-                  href="#"
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label={`ASCENDO sur ${name}`}
                   className="grid h-11 w-11 place-items-center rounded-full border border-white/20 transition-[background-color,color,transform] duration-300 ease-brand hover:-translate-y-0.5 hover:bg-white hover:text-ink"
                 >
@@ -83,16 +84,12 @@ export default function Footer() {
           <h2 className="eyebrow !text-[12px] !leading-none">Contact</h2>
           <address className="mt-6 space-y-3 text-sm not-italic text-white/70">
             <p>
-              <a href="mailto:bonjour@ascendo.fr" className="link-underline hover:text-white">
-                bonjour@ascendo.fr
+              <a href={`mailto:${footer.email}`} className="link-underline hover:text-white">
+                {footer.email}
               </a>
             </p>
-            <p>Du lundi au vendredi, 9 h – 18 h</p>
-            <p>
-              12 rue des Ateliers
-              <br />
-              75011 Paris
-            </p>
+            {footer.hours && <p>{footer.hours}</p>}
+            {footer.address && <p className="whitespace-pre-line">{footer.address}</p>}
           </address>
         </div>
       </div>

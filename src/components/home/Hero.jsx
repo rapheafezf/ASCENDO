@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { useContent } from '../../hooks/useContent'
 
 /** Lignes ascendantes « escalier / montagne » tracées en arrière-plan. */
 const LINES = [
@@ -9,6 +10,7 @@ const LINES = [
 ]
 
 export default function Hero() {
+  const { hero } = useContent().site
   const [drawn, setDrawn] = useState(false)
 
   // Les tracés démarrent juste après le montage (et après le preloader s'il est actif)
@@ -19,6 +21,9 @@ export default function Hero() {
 
   return (
     <section className="on-dark relative flex h-svh min-h-[600px] items-end overflow-hidden bg-navy text-white" aria-labelledby="hero-title">
+      {hero.image && (
+        <img src={hero.image} alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+      )}
       {/* Overlay : dégradé marine → noir pour garantir le contraste du texte */}
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-navy/60 to-navy/30" aria-hidden="true" />
       <div className="absolute inset-0 bg-gradient-to-r from-navy-dark/70 to-transparent" aria-hidden="true" />
@@ -45,19 +50,19 @@ export default function Hero() {
       </svg>
 
       <div className="container-brand relative pb-28 sm:pb-32 lg:pb-36">
-        <p className="eyebrow mb-5 text-white/80 animate-page-in">Collection Automne-Hiver</p>
+        <p className="eyebrow mb-5 text-white/80 animate-page-in">{hero.eyebrow}</p>
         <h1 id="hero-title" className="max-w-[12ch] animate-page-in [animation-delay:120ms]">
-          Elevate Yourself
+          {hero.title}
         </h1>
         <p className="mt-6 max-w-md text-white/80 animate-page-in [animation-delay:220ms]">
-          Des pièces denses, nettes et durables. Conçues pour chaque palier que vous franchissez.
+          {hero.text}
         </p>
         <div className="relative mt-10 flex flex-col gap-3 animate-page-in [animation-delay:320ms] sm:flex-row sm:items-center sm:gap-4">
-          <Link to="/collection/homme" className="btn btn-primary">
-            Acheter Homme
+          <Link to="/collection/hoodies" className="btn btn-primary">
+            {hero.ctaPrimary}
           </Link>
-          <Link to="/collection/femme" className="btn btn-secondary">
-            Acheter Femme
+          <Link to="/lookbook" className="btn btn-secondary">
+            {hero.ctaSecondary}
           </Link>
           {/* Flèche flottante à côté des CTA */}
           <svg viewBox="0 0 40 56" className="ml-4 hidden h-14 w-10 animate-float sm:block" fill="none" stroke="#FFFFFF" strokeWidth="1.5" aria-hidden="true">

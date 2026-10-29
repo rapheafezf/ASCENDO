@@ -3,15 +3,15 @@ import { Link } from 'react-router'
 import Reveal from '../Reveal'
 import ProductCard from '../ProductCard'
 import { ArrowIcon } from '../Icons'
-import { PRODUCTS } from '../../data/products'
-
-const ITEMS = PRODUCTS.slice(0, 8)
+import { useContent } from '../../hooks/useContent'
 
 /**
  * Carrousel des nouveautés. Repose sur le scroll natif avec scroll-snap :
  * glisser tactile, trackpad et clavier fonctionnent sans librairie.
  */
 export default function NewArrivals() {
+  const { products, site } = useContent()
+  const items = products.slice(0, 8)
   const track = useRef(null)
   const [edges, setEdges] = useState({ start: true, end: false })
   const [progress, setProgress] = useState(0)
@@ -46,8 +46,8 @@ export default function NewArrivals() {
       <div className="container-brand">
         <Reveal className="mb-12 flex items-end justify-between gap-6 lg:mb-16">
           <div>
-            <p className="eyebrow mb-4 text-slate">Première collection — Automne-Hiver</p>
-            <h2 id="new-title">Nouveautés</h2>
+            <p className="eyebrow mb-4 text-slate">{site.collection.eyebrow}</p>
+            <h2 id="new-title">{site.collection.title}</h2>
           </div>
           <div className="hidden gap-3 sm:flex">
             <button type="button" className={arrowBtn} onClick={() => scrollBy(-1)} disabled={edges.start} aria-label="Produits précédents">
@@ -66,10 +66,10 @@ export default function NewArrivals() {
           ref={track}
           onScroll={update}
           tabIndex={0}
-          aria-label="Carrousel des nouveautés, faites défiler horizontalement"
+          aria-label="Carrousel des hoodies, faites défiler horizontalement"
           className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 focus-visible:outline-offset-8 lg:gap-6"
         >
-          {ITEMS.map((p, i) => (
+          {items.map((p, i) => (
             <Reveal
               as="li"
               key={p.id}
@@ -90,8 +90,8 @@ export default function NewArrivals() {
             style={{ transform: `translateX(${progress * 300}%)` }}
           />
         </div>
-        <Link to="/collection/nouveautes" className="btn btn-dark shrink-0">
-          Voir les nouveautés
+        <Link to="/collection/hoodies" className="btn btn-dark shrink-0">
+          {site.collection.button}
         </Link>
       </div>
     </section>

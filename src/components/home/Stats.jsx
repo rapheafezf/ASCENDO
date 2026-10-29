@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useInView } from '../../hooks/useInView'
 import Reveal from '../Reveal'
-
-const STATS = [
-  { value: 380, suffix: ' g', label: 'Grammage de nos molletons', ratio: 0.76 },
-  { value: 100, suffix: ' %', label: 'Coton biologique', ratio: 1 },
-  { value: 30, suffix: ' j', label: 'Pour changer d’avis', ratio: 0.3 },
-  { value: 80, suffix: ' €', label: 'Livraison offerte dès', ratio: 0.8 },
-]
+import { useContent } from '../../hooks/useContent'
 
 const R = 54
 const C = 2 * Math.PI * R
@@ -15,7 +9,7 @@ const DURATION = 1500
 const ease = (t) => 1 - Math.pow(1 - t, 4)
 
 /** Cercle de progression + compteur animé, déclenchés à l'entrée dans l'écran. */
-function StatCircle({ value, suffix, label, ratio, start }) {
+function StatCircle({ value, suffix, label, ratio = 0.75, start }) {
   const [n, setN] = useState(0)
 
   useEffect(() => {
@@ -70,17 +64,18 @@ function StatCircle({ value, suffix, label, ratio, start }) {
 }
 
 export default function Stats() {
+  const { stats, statsSection } = useContent().site
   const [ref, visible] = useInView({ threshold: 0.35 })
   return (
     <section ref={ref} className="section" aria-labelledby="stats-title">
       <div className="container-brand">
         <Reveal className="mx-auto mb-16 max-w-2xl text-center lg:mb-20">
-          <p className="eyebrow mb-4 text-slate">En chiffres</p>
-          <h2 id="stats-title">La progression se mesure</h2>
+          <p className="eyebrow mb-4 text-slate">{statsSection.eyebrow}</p>
+          <h2 id="stats-title">{statsSection.title}</h2>
         </Reveal>
         <div className="grid grid-cols-2 gap-x-6 gap-y-14 lg:grid-cols-4">
-          {STATS.map((s) => (
-            <StatCircle key={s.label} {...s} start={visible} />
+          {stats.map((s, i) => (
+            <StatCircle key={i} {...s} start={visible} />
           ))}
         </div>
       </div>
