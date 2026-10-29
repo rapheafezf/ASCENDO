@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { COLORS, SIZES, formatPrice } from '../data/products'
-import { totalStock } from '../hooks/useContent'
+import { totalStock, useContent } from '../hooks/useContent'
 import Placeholder from './Placeholder'
 import { useStore } from '../hooks/useStore'
 import { BagIcon, HeartIcon } from './Icons'
@@ -12,10 +12,11 @@ import { BagIcon, HeartIcon } from './Icons'
  */
 export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw, 50vw' }) {
   const { addToCart, wishlist, toggleWishlist } = useStore()
+  const { shop } = useContent().site
   const liked = wishlist.includes(product.id)
   const url = `/produit/${product.id}`
   const title = `${product.name} ${product.color}`
-  const soldOut = totalStock(product) === 0
+  const soldOut = shop.open && totalStock(product) === 0
   // Ajout rapide : taille M si disponible, sinon la première taille en stock
   const quickSize = product.stock?.M > 0 ? 'M' : SIZES.find((s) => product.stock?.[s] > 0)
   const [img1, img2] = product.images || []
@@ -37,7 +38,11 @@ export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw
           )}
         </Link>
 
-        {soldOut ? (
+        {!shop.open ? (
+          <span className="pointer-events-none absolute left-3 top-3 bg-navy px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+            {shop.comingSoon}
+          </span>
+        ) : soldOut ? (
           <span className="pointer-events-none absolute left-3 top-3 bg-slate px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-white">
             Épuisé
           </span>
@@ -61,7 +66,7 @@ export default function ProductCard({ product, sizes = '(min-width: 1024px) 25vw
           <HeartIcon filled={liked} width={20} height={20} />
         </button>
 
-        {!soldOut && (
+        {shop.open && !soldOut && (
         <button
           type="button"
           onClick={() => addToCart(product, quickSize)}

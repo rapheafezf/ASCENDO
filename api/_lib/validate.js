@@ -29,6 +29,8 @@ export function validateContent(c) {
   if (!c.lookbook.every((l) => isStr(l.caption) && isUrl(l.image))) return 'Entrée de lookbook invalide.'
   if (!isUrl(c.site.hero?.image ?? '') || !isUrl(c.site.editorial?.image ?? '')) return 'Image du site invalide.'
   if (!Array.isArray(c.site.marquee) || !c.site.marquee.every(isStr)) return 'Bandeau défilant invalide.'
+  if (typeof c.site.shop?.open !== 'boolean') return 'État de la boutique invalide.'
+  if (!Array.isArray(c.site.payments) || !c.site.payments.every(isStr)) return 'Moyens de paiement invalides.'
   for (const k of ['instagram', 'tiktok', 'youtube']) {
     const v = c.site.footer?.[k] ?? ''
     if (!isStr(v) || (v && !/^https:\/\//.test(v))) return `Lien ${k} invalide : il doit commencer par https://`

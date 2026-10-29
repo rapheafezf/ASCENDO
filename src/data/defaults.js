@@ -19,7 +19,7 @@ export const CATEGORIES = ['Hoodies']
 /** Seuil en dessous duquel une taille est signalée « stock bas » dans l'admin. */
 export const LOW_STOCK = 3
 
-const stock = (n) => Object.fromEntries(SIZES.map((s) => [s, n]))
+export const emptyStock = () => Object.fromEntries(SIZES.map((s) => [s, 0]))
 
 export const DEFAULT_CONTENT = {
   version: 0,
@@ -28,9 +28,12 @@ export const DEFAULT_CONTENT = {
     seo: {
       title: 'ASCENDO — Elevate Yourself | Hoodies mixtes',
       description:
-        'ASCENDO, streetwear premium mixte. Hoodies en coton biologique épais 380 g/m², pensés pour elle comme pour lui. Livraison offerte dès 80 €.',
+        'ASCENDO, streetwear premium mixte. Des hoodies épais pensés pour elle comme pour lui. Première collection bientôt disponible.',
     },
-    announcement: 'Livraison offerte dès 80 € • Retours 30 jours',
+    // Fermée = pré-lancement : produits présentés « bientôt disponibles », aucun achat possible
+    shop: { open: false, comingSoon: 'Bientôt disponible' },
+    payments: ['Visa', 'Mastercard', 'Apple Pay'],
+    announcement: 'Première collection bientôt disponible • Inscris-toi pour ne pas rater le lancement',
     hero: {
       eyebrow: 'Collection Automne-Hiver',
       title: 'Elevate Yourself',
@@ -66,9 +69,9 @@ export const DEFAULT_CONTENT = {
     newsletter: {
       eyebrow: 'Newsletter',
       title: 'Rejoins le mouvement',
-      text: 'Sois parmi les premiers informés des sorties et des réassorts.',
-      note: 'Un e-mail par semaine maximum. Désinscription en un clic.',
-      success: 'Bienvenue dans le mouvement. Tu recevras les nouveautés en avant-première.',
+      text: 'Laisse ton e-mail : on te prévient dès l’ouverture de la boutique.',
+      note: 'Ton e-mail sert uniquement à te prévenir des sorties ASCENDO. Désinscription sur simple demande.',
+      success: 'C’est noté. On t’écrit dès l’ouverture de la boutique.',
     },
     footer: {
       tagline: 'Streetwear premium mixte, pensé pour ceux qui avancent.',
@@ -102,7 +105,7 @@ export const DEFAULT_CONTENT = {
       description:
         "Notre pièce signature. Coupe mixte légèrement oversize, capuche doublée et poche kangourou renforcée.",
       material: 'Coton 100 % biologique, molleton gratté 380 g/m². Bord-côtes 2×2 avec élasthanne.',
-      stock: stock(10),
+      stock: emptyStock(),
       active: true,
     },
     {
@@ -118,7 +121,7 @@ export const DEFAULT_CONTENT = {
       description:
         "Notre pièce signature. Coupe mixte légèrement oversize, capuche doublée et poche kangourou renforcée.",
       material: 'Coton 100 % biologique, molleton gratté 380 g/m². Bord-côtes 2×2 avec élasthanne.',
-      stock: stock(10),
+      stock: emptyStock(),
       active: true,
     },
     {
@@ -134,7 +137,7 @@ export const DEFAULT_CONTENT = {
       description:
         "Notre pièce signature. Coupe mixte légèrement oversize, capuche doublée et poche kangourou renforcée.",
       material: 'Coton 100 % biologique, molleton gratté 380 g/m². Bord-côtes 2×2 avec élasthanne.',
-      stock: stock(10),
+      stock: emptyStock(),
       active: true,
     },
     {
@@ -149,7 +152,7 @@ export const DEFAULT_CONTENT = {
       images: [],
       description: 'Zip intégral, capuche à double épaisseur et poches zippées invisibles. Coupe mixte.',
       material: 'Coton 100 % biologique, molleton gratté 380 g/m². Zip métal mat.',
-      stock: stock(10),
+      stock: emptyStock(),
       active: true,
     },
   ],

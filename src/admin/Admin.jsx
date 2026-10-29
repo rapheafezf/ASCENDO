@@ -4,6 +4,7 @@ import { getToken, loadContent, login, saveContent, setToken } from './api'
 import { Button } from './fields'
 import { Dashboard, ProductEditor, ProductList, StockTable, newProduct } from './Products'
 import { LookbookEditor, SiteEditor } from './ContentEditor'
+import Subscribers from './Subscribers'
 
 /**
  * Espace d'administration (/admin, ou /.admin sur Vercel).
@@ -16,6 +17,7 @@ const TABS = [
   ['stock', 'Stock'],
   ['site', 'Textes du site'],
   ['lookbook', 'Lookbook'],
+  ['newsletter', 'Inscrits'],
 ]
 
 function Login({ onSuccess }) {
@@ -222,6 +224,8 @@ export default function Admin() {
           <ProductList products={draft.products} onOpen={open} onAdd={() => addProduct()} onMove={moveProduct} />
         ) : tab === 'stock' ? (
           <StockTable products={draft.products} onChange={updateProduct} />
+        ) : tab === 'newsletter' ? (
+          <Subscribers onAuthError={logout} />
         ) : tab === 'site' ? (
           <SiteEditor site={draft.site} onChange={(site) => setDraft((d) => ({ ...d, site }))} />
         ) : (

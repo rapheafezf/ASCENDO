@@ -10,7 +10,7 @@ import Newsletter from '../components/home/Newsletter'
 import { totalStock, useContent } from '../hooks/useContent'
 
 // Données structurées produit (schema.org) pour les hoodies mis en avant
-const productsLd = (products) => ({
+const productsLd = (products, open) => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'Hoodies ASCENDO',
@@ -30,7 +30,11 @@ const productsLd = (products) => ({
         '@type': 'Offer',
         price: p.price.toFixed(2),
         priceCurrency: 'EUR',
-        availability: totalStock(p) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        availability: !open
+          ? 'https://schema.org/PreOrder'
+          : totalStock(p) > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
       },
     },
   })),
@@ -43,7 +47,7 @@ export default function Home() {
       <Seo
         title={site.seo.title}
         description={site.seo.description}
-        jsonLd={productsLd(products)}
+        jsonLd={productsLd(products, site.shop.open)}
       />
       <Hero />
       <div id="marquee">

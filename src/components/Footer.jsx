@@ -32,10 +32,8 @@ const COLUMNS = [
   },
 ]
 
-const PAYMENTS = ['VISA', 'Mastercard', 'Amex', 'PayPal', 'Apple Pay']
-
 export default function Footer() {
-  const { footer } = useContent().site
+  const { footer, shop, payments } = useContent().site
   return (
     <footer className="on-dark bg-ink text-white">
       <div className="container-brand grid gap-12 py-20 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)] lg:py-24">
@@ -96,13 +94,15 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-brand flex flex-col gap-6 py-8 text-xs text-white/60 lg:flex-row lg:items-center lg:justify-between">
+          {shop.open && payments.length > 0 && (
           <ul className="flex flex-wrap gap-2" aria-label="Moyens de paiement acceptés">
-            {PAYMENTS.map((p) => (
+            {payments.map((p) => (
               <li key={p} className="rounded-[2px] border border-white/20 px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.1em] text-white/80">
                 {p}
               </li>
             ))}
           </ul>
+          )}
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
             <li><Link to="/cgv" className="link-underline hover:text-white">CGV</Link></li>
             <li><Link to="/confidentialite" className="link-underline hover:text-white">Confidentialité</Link></li>

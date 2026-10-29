@@ -1,4 +1,4 @@
-import { Area, Button, Card, ImageUpload, NumberInput, Text, Thumb } from './fields'
+import { Area, Button, Card, ImageUpload, NumberInput, Text, Thumb, Toggle } from './fields'
 
 /** Édition des textes du site et du lookbook. */
 
@@ -30,6 +30,27 @@ export function SiteEditor({ site, onChange }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
+      <Card title="Boutique" className="lg:col-span-2">
+        <Toggle
+          label={site.shop.open ? 'Boutique ouverte : les clients peuvent ajouter au panier' : 'Pré-lancement : produits présentés, achat désactivé'}
+          checked={site.shop.open}
+          onChange={(open) => set('shop', { open })}
+        />
+        <p className="mt-3 text-sm text-slate">
+          N'ouvrez la boutique qu'une fois le paiement, les CGV et les mentions légales en place. Tant qu'elle est fermée, les pièces
+          affichent l'étiquette ci-dessous et les logos de paiement sont masqués.
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Text label="Étiquette pré-lancement" value={site.shop.comingSoon} onChange={(comingSoon) => set('shop', { comingSoon })} />
+          <Text
+            label="Moyens de paiement affichés"
+            hint="Séparés par des virgules. Seulement ceux réellement acceptés."
+            value={site.payments.join(', ')}
+            onChange={(v) => onChange({ ...site, payments: v.split(',').map((x) => x.trim()).filter(Boolean) })}
+          />
+        </div>
+      </Card>
+
       <Card title="Référencement Google">
         <div className="space-y-4">
           <Text label="Titre de l'onglet" value={site.seo.title} onChange={(title) => set('seo', { title })} />

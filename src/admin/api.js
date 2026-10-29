@@ -35,6 +35,9 @@ export const loadContent = () => request('/api/content?fresh=1')
 export const saveContent = (content) =>
   request('/api/content', { method: 'PUT', body: JSON.stringify(content), type: 'application/json' })
 
+export const loadSubscribers = () => request('/api/subscribers')
+export const removeSubscriber = (email) => request(`/api/subscribers?email=${encodeURIComponent(email)}`, { method: 'DELETE' })
+
 /** Réduit l'image à 1800 px de côté maximum (JPEG) avant l'envoi. */
 async function shrink(file, max = 1800) {
   const bitmap = await createImageBitmap(file)

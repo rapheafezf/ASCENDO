@@ -9,16 +9,26 @@ export default function Newsletter() {
   const { newsletter } = useContent().site
   const id = useId()
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState('idle') // idle | error | success
+  const [website, setWebsite] = useState('') // piège à robots, invisible
+  const [status, setStatus] = useState('idle') // idle | busy | error | fail | success
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
     if (!EMAIL_RE.test(email.trim())) {
       setStatus('error')
       return
     }
-    // Brancher ici votre outil d'e-mailing (Klaviyo, Brevo, Shopify…)
-    setStatus('success')
+    setStatus('busy')
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, website }),
+      })
+      setStatus(res.ok ? 'success' : res.status === 400 ? 'error' : 'fail')
+    } catch {
+      setStatus('fail')
+    }
   }
 
   return (
@@ -41,7 +51,7 @@ export default function Newsletter() {
             </p>
           ) : (
             <form onSubmit={onSubmit} noValidate className="mx-auto mt-10 max-w-lg">
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex flex-col gap-3 sm:flex-row">
                 <label htmlFor={`${id}-email`} className="sr-only">
                   Adresse e-mail
                 </label>
@@ -54,20 +64,32 @@ export default function Newsletter() {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value)
-                    if (status === 'error') setStatus('idle')
+                    if (status === 'error' || status === 'fail') setStatus('idle')
                   }}
                   aria-invalid={status === 'error'}
                   aria-describedby={`${id}-msg`}
                   className="h-[52px] flex-1 rounded-[2px] border border-white/40 bg-transparent px-5 text-white placeholder:text-white/50 transition-colors duration-300 focus:border-white focus:outline-none focus-visible:outline-2 focus-visible:outline-white aria-[invalid=true]:border-white"
                 />
-                <button type="submit" className="btn btn-primary group">
-                  S'inscrire
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  className="absolute -left-[9999px] h-px w-px opacity-0"
+                />
+                <button type="submit" disabled={status === 'busy'} className="btn btn-primary group disabled:opacity-60">
+                  {status === 'busy' ? 'Envoi…' : "S'inscrire"}
                   <ArrowIcon className="transition-transform duration-300 ease-brand group-hover:translate-x-1" />
                 </button>
               </div>
               <p id={`${id}-msg`} className="mt-4 min-h-[1.6em] text-sm text-white/70" aria-live="polite">
                 {status === 'error' ? (
                   <span className="font-medium text-white">Merci de saisir une adresse e-mail valide.</span>
+                ) : status === 'fail' ? (
+                  <span className="font-medium text-white">L'inscription n'a pas abouti. Réessaie dans un instant.</span>
                 ) : (
                   newsletter.note
                 )}
